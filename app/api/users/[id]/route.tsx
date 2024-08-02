@@ -1,3 +1,4 @@
+import prisma from "@/prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import schema from "../schema";
 
@@ -7,11 +8,23 @@ interface Props {
   };
 }
 
-export function GET(request: NextRequest, { params: { id } }: Props) {
-  if (id > 10)
+export function GET(
+  request: NextRequest,
+  {
+    params,
+  }: {
+    params: {
+      id: string;
+    };
+  }
+) {
+  const user = prisma.user.findUnique({
+    where: { id: parseInt(params.id) },
+  });
+  if (!user)
     return NextResponse.json({ error: "User does not exist" }, { status: 404 });
 
-  return NextResponse.json({ id: 1, name: "sachin" });
+  return NextResponse.json(user);
 }
 
 export async function PUT(request: NextRequest, { params: { id } }: Props) {
